@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   templateUrl: './dynamic-page.component.html',
@@ -8,6 +8,9 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class DynamicPageComponent {
 
   public myForm: FormGroup ;
+
+  public newFavorite: FormControl = new FormControl('',Validators.required)
+
 
   constructor(private fb: FormBuilder) {
 
@@ -23,13 +26,19 @@ export class DynamicPageComponent {
   }
 
   onSubmit(): void{
-    if ( this.myForm.invalid ){
+    if ( this.myForm.invalid ) {
       this.myForm.markAllAsTouched();
       return;
     }
 
     console.log(this.myForm.value);
-    this.myForm.reset();
+
+    //TODO falta reestablecer los campos del formulario
+    (this.myForm.controls['favoritesGames'] as FormArray ) = this.fb.array([]);
+    //(this.myForm.controls['favoritesGames'] ) = new FormArray([]);
+    this.myForm.reset()
+
+
 
   }
 
@@ -72,6 +81,26 @@ export class DynamicPageComponent {
     return 'Hola mundo';
 
   }
+
+  onDeleteFavorite( index:number ):void {
+    this.favoriteGames.removeAt(index);
+  }
+
+  onAddToFavorites():void{
+    if ( this.newFavorite.invalid ) return;
+
+    const newGame = this.newFavorite.value;
+
+    this.favoriteGames.push(
+      this.fb.control( newGame, Validators.required)
+    );
+
+    this.newFavorite.reset();
+
+
+  }
+
+
 
 
 }
